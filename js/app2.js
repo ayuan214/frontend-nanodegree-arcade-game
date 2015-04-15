@@ -54,9 +54,11 @@ Enemy.prototype.update = function(dt) {
     }
 
 
-    if (Math.abs(this.x-player.x) < 50 && Math.abs(this.y-player.y) < 5) {
+    if (Math.abs(this.x-player.x) < 50 && Math.abs(this.y-player.y) < 10) {
         player.x = 200;
         player.y = 400;
+        player.col_num++; 
+        //allHeart[0].y = 100;
     }
 }
 
@@ -75,6 +77,7 @@ var Player = function(x,y) {
     this.sprite = 'images/char-boy.png';
     this.x_mov = 0;
     this.y_mov = 0; 
+    this.col_num = 0;
 
     return this; 
 }
@@ -119,17 +122,51 @@ Player.prototype.handleInput = function(loc) {
         this.x_mov = -100;
     }
 }
+
+// creates the heart object to count lives
+var Heart = function(x) {
+    this.x = x;
+    this.y = 10;
+    this.sprite = 'images/buu.png';
+    //this.val = 4; 
+}
+
+Heart.prototype.update = function() {
+    if(player.col_num == "1"    ){
+        allHeart[0].x = 1000;
+    }
+    else if(player.col_num == 2){
+        allHeart[1].x = 1000;
+        allHeart[0].x = 1000;
+    }
+    else if(player.col_num == 3){
+        allHeart[2].x = 1000;
+        allHeart[1].x = 1000;
+        allHeart[0].x = 1000;
+    }
+}
+
+Heart.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 var allEnemies = [];
+var allHeart = [];
 
 for (var bug = 0; bug < 5; bug++) {
     allEnemies.push(new Enemy());
 }
 
+for (var heart = 0; heart < 2; heart++) {
+    allHeart.push(new Heart(505-(heart+1)*100));
+}
+
 var player = new Player(200, 400);
+
+//var heart = new Heart(400);
 
 
 
