@@ -160,7 +160,7 @@ var Engine = (function(global) {
 
         player.render();
 
-        heart.render();
+        //heart.render();
         /* 
         allHeart.forEach(function(heart) {
             heart.render();

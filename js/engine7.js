@@ -45,6 +45,8 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         update(dt);
         render();
 
@@ -65,6 +67,8 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
+        //select_char();
+        gameStart(); 
         lastTime = Date.now();
         main();
     }
@@ -79,8 +83,18 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        if (game_state === 'game_start') {
+            gamePlay(5, 5, 200, 400);
+        }
+
+        if (game_state === 'playing') {
+            Collision_Check();
+            lives_check();  
+        }
+
+
         updateEntities(dt);
-        // checkCollisions();
+         
     }
 
     /* This is called by the update function  and loops through all of the
@@ -91,10 +105,22 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
-        });
-        player.update();
+
+        if (game_state === 'char_select') {
+            selectChar.update(); 
+        }
+
+        else if (game_state === 'playing') {
+            allEnemies.forEach(function(enemy) {
+                enemy.update(dt);
+            });
+
+            player.update();  
+        }
+
+
+     
+       
 
         /*
         allHeart.forEach(function(heart) {
@@ -114,7 +140,7 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/white-block.png',
+                //'images/white-block.png',
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
@@ -122,7 +148,7 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 7,
+            numRows = 6,
             numCols = 5,
             row, col;
 
@@ -140,12 +166,7 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
 
-                if (row == 1) {
-                    ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 5); 
-                }
-
-                else 
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 -75); 
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83); 
                
             }
         }
@@ -162,13 +183,25 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
 
-        player.render();
+        if (game_state === 'char_select') {
+            selectChar.render() 
+        }
 
-        heart.render();
+        if (game_state === 'end') {
+            gameOver.render();
+        }
+
+        if (game_state === 'playing') {
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+
+            player.render();
+
+            heart.render();
+        }
+
         /* 
         allHeart.forEach(function(heart) {
             heart.render();
@@ -195,7 +228,12 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/heart1.png'
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/heart1.png',
+        'images/Selector.png'
     ]);
     Resources.onReady(init);
 

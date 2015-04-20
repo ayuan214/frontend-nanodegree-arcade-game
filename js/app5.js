@@ -1,4 +1,6 @@
 // Enemies our player must avoid
+//var game_state = 'playing';
+
 var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -16,18 +18,18 @@ var Enemy = function() {
 Enemy.prototype.y_position = function() {
     var del_y = Math.floor(Math.random()*10);
     
-    var init_y = 60;  
+    var init_y = 70;  
     //var y_loc = 0; 
 
     if (del_y <= 3) {
-        init_y = 60; 
+        init_y; 
     }
     else if (del_y > 3 && del_y <9){
-        init_y += init_y+25;
+        init_y += init_y+15;
     }
 
     else if (del_y >= 9) {
-         init_y += (init_y + 55*2); 
+         init_y += (init_y + 50*2); 
     }
 
     return  init_y;   
@@ -54,14 +56,9 @@ Enemy.prototype.update = function(dt) {
     }
 
     // checks for enemy collision 
-    if (Math.abs(this.x-player.x) < 50 && Math.abs(this.y-player.y) < 15) {
-        player.x = 200;
-        player.y = 400;
-        //player.col_num++; 
-        //allHeart[0].y = 100;
-        heart.lives--; 
-    }
-}
+   
+}    
+
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -93,12 +90,11 @@ Player.prototype.update = function() {
     else if(this.x < 1){
         this.x = 1;
     }
-    else if(this.y > 400){
-        this.y = 400;
+    else if(this.y > 415){
+        this.y = 415;
     }
-    else if(this.y < 1){
-        player.x = 200;
-        player.y = 400;
+    else if(this.y < 0){
+        player.y = 1;
     }
 
     this.x_mov = 0;
@@ -137,47 +133,74 @@ var Heart = function(lives) {
     
 }
 
-/*
-Heart.prototype.update = function() {
-    if(player.col_num == "1"    ){
-        allHeart[0].x = 1000;
-    }
-    else if(player.col_num == 2){
-        allHeart[1].x = 1000;
-        allHeart[0].x = 1000;
-    }
-    else if(player.col_num == 3){
-        allHeart[2].x = 1000;
-        allHeart[1].x = 1000;
-        allHeart[0].x = 1000;
-    }
-}
-*/
 
 Heart.prototype.render = function() {
+    ctx.fillStyle = "black";
+    ctx.font = "bold 25px sans-serif";
+    ctx.fillText('Lives:', 300, this.y+30);
     for (i=0; i<this.lives; i++)
-    ctx.drawImage(Resources.get(this.sprite), (this.x-(i+1)*100), this.y);
+    ctx.drawImage(Resources.get(this.sprite), (this.x-(i+1)*25), this.y);
     //ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
+
+var GameOver = function() {
+    this.x = 0;
+    this.y = 100;
+}
+
+GameOver.prototype.render = function() {
+    if (game_state == 'end') {
+        ctx.textAlign = "center";
+        ctx.fillStyle = "white";
+        ctx.font = "bold 48px sans-serif";
+        ctx.fillText('GAME OVER', ctx.canvas.width/2, ctx.canvas.height/5);
+    }
+}
+
+GameOver.prototype.handleInput = function(loc) {
+    if(loc === "up"){
+        game_state = 'playing';
+    }
+}
+//Check for collision function
+
+var Collision_Check = function() {
+    for (enemy in allEnemies) {
+        if (Math.abs(allEnemies[enemy].x-player.x) < 50 && Math.abs(allEnemies[enemy].y-player.y) < 15) {
+            player.x = 200;
+            player.y = 400;
+            //player.col_num++; 
+            //allHeart[0].y = 100;
+            heart.lives--; 
+        }
+    }
+}
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
-var allEnemies = [];
-//var allHeart = [];
-
-for (var bug = 0; bug < 7; bug++) {
-    allEnemies.push(new Enemy());
+var gameStart = function() {
+    game_state = 'playing'
 }
-/*
-for (var heart = 0; heart < 3; heart++) {
-    allHeart.push(new Heart(505-(heart+1)*100));
+
+var lives_check = function() {
+    if (heart.lives < 1) {
+        game_state = 'end';
+        return game_state;
+    }
+    //return game_state; 
 }
-*/
+    var allEnemies = [];
+    for (var bug = 0; bug < 3; bug++) {
+        allEnemies.push(new Enemy());
+    }
 
-var player = new Player(200, 400);
+    var gameOver = new GameOver();
 
-var heart = new Heart(5);
+    var player = new Player(200, 415);
+
+    var heart = new Heart(5);
 
 
 

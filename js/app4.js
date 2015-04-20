@@ -1,4 +1,6 @@
 // Enemies our player must avoid
+//var game_state = 'playing';
+
 var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -54,14 +56,9 @@ Enemy.prototype.update = function(dt) {
     }
 
     // checks for enemy collision 
-    if (Math.abs(this.x-player.x) < 50 && Math.abs(this.y-player.y) < 15) {
-        player.x = 200;
-        player.y = 400;
-        //player.col_num++; 
-        //allHeart[0].y = 100;
-        heart.lives--; 
-    }
-}
+   
+}    
+
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -159,14 +156,45 @@ Heart.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), (this.x-(i+1)*100), this.y);
     //ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
+
+var Menu = function() {
+    this.x = 0;
+    this.y = 100;
+}
+
+Menu.prototype.render = function() {
+    if (heart.lives < 1) {
+        ctx.textAlign = "center";
+        ctx.fillStyle = "white";
+        ctx.font = "bold 48px sans-serif";
+        ctx.fillText('GAME OVER', ctx.canvas.width/2, ctx.canvas.height/5);
+        game_state = 'end'; 
+        return game_state;
+    }
+}
+
+//Check for collision function
+
+var Collision_Check = function() {
+    for (enemy in allEnemies) {
+        if (Math.abs(allEnemies[enemy].x-player.x) < 50 && Math.abs(allEnemies[enemy].y-player.y) < 15) {
+            player.x = 200;
+            player.y = 400;
+            //player.col_num++; 
+            //allHeart[0].y = 100;
+            heart.lives--; 
+        }
+    }
+    
+}
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-
 var allEnemies = [];
 //var allHeart = [];
 
-for (var bug = 0; bug < 7; bug++) {
+for (var bug = 0; bug < 3; bug++) {
     allEnemies.push(new Enemy());
 }
 /*
@@ -175,10 +203,11 @@ for (var heart = 0; heart < 3; heart++) {
 }
 */
 
+var menu = new Menu();
+
 var player = new Player(200, 400);
 
-var heart = new Heart(5);
-
+var heart = new Heart(1);
 
 
 // This listens for key presses and sends the keys to your

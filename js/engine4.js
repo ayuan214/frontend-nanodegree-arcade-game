@@ -80,7 +80,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        Collision_Check();
     }
 
     /* This is called by the update function  and loops through all of the
@@ -162,13 +162,21 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
 
-        player.render();
+        if (game_state === 'end') {
+            menu.render();
+        }
 
-        heart.render();
+        if (game_state === 'playing') {
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+
+            player.render();
+
+            heart.render();
+        }
+
         /* 
         allHeart.forEach(function(heart) {
             heart.render();

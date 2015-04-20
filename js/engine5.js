@@ -65,6 +65,7 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
+        gameStart();
         lastTime = Date.now();
         main();
     }
@@ -80,7 +81,8 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        Collision_Check();
+        lives_check(); 
     }
 
     /* This is called by the update function  and loops through all of the
@@ -140,12 +142,12 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
 
-                if (row == 1) {
+                if (row == 0) {
                     ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 5); 
                 }
 
                 else 
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 -75); 
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 -70); 
                
             }
         }
@@ -162,13 +164,21 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
 
-        player.render();
+        if (game_state === 'end') {
+            gameOver.render();
+        }
 
-        heart.render();
+        if (game_state === 'playing') {
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+
+            player.render();
+
+            heart.render();
+        }
+
         /* 
         allHeart.forEach(function(heart) {
             heart.render();

@@ -54,7 +54,7 @@ Enemy.prototype.update = function(dt) {
     }
 
 
-    if (Math.abs(this.x-player.x) < 50 && Math.abs(this.y-player.y) < 10) {
+    if (Math.abs(this.x-player.x) < 50 && Math.abs(this.y-player.y) < 15) {
         player.x = 200;
         player.y = 400;
         player.col_num++; 
@@ -92,8 +92,8 @@ Player.prototype.update = function() {
     else if(this.x < 1){
         this.x = 1;
     }
-    else if(this.y > 405){
-        this.y = 405;
+    else if(this.y > 400){
+        this.y = 400;
     }
     else if(this.y < 1){
         player.x = 200;

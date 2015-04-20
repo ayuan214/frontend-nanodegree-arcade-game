@@ -65,6 +65,8 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
+        //select_char();
+        gameStart(); 
         lastTime = Date.now();
         main();
     }
@@ -80,7 +82,8 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        Collision_Check();
+        lives_check(); 
     }
 
     /* This is called by the update function  and loops through all of the
@@ -95,6 +98,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        selectChar.update();
 
         /*
         allHeart.forEach(function(heart) {
@@ -140,12 +144,12 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
 
-                if (row == 1) {
+                if (row == 0) {
                     ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 5); 
                 }
 
                 else 
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 -75); 
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 -70); 
                
             }
         }
@@ -162,13 +166,25 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
 
-        player.render();
+        if (game_state === 'char_select') {
+            selectChar.render() 
+        }
 
-        heart.render();
+        if (game_state === 'end') {
+            gameOver.render();
+        }
+
+        if (game_state === 'playing') {
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+
+            player.render();
+
+            heart.render();
+        }
+
         /* 
         allHeart.forEach(function(heart) {
             heart.render();
@@ -195,7 +211,12 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/heart1.png'
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/heart1.png',
+        'images/Selector.png'
     ]);
     Resources.onReady(init);
 
