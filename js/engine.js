@@ -45,6 +45,8 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+
+        ctx.clearRect(0,0,canvas.width,canvas.height); //THIS CLEARS THE CANVAS AFTER EACH FRAME
         update(dt);
         render();
 
@@ -79,8 +81,24 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        if (game_state === 'game_start') {
+            gamePlay(5, 5, 200, 400); // starts game with 5 enemies, 5 lives, and the player position at (200,400)
+        }
+
+        if (game_state === 'playing') { // once the game is playing we will check for collisions, the amount of lives the user has, and whether or not all keys have been collected
+            Collision_Check();
+            lives_check();
+            key_check();   
+        }
+
+        if (game_state === 'keys_collect') { // once all the keys are collected we will continue to monitor any collisions or if the user ran out of lives
+            Collision_Check();
+            lives_check();   
+        }
+
+
         updateEntities(dt);
-        // checkCollisions();
+         
     }
 
     /* This is called by the update function  and loops through all of the
@@ -91,10 +109,22 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
-        });
-        player.update();
+
+        if (game_state === 'char_select') {
+            selectChar.update(); // this will update the selector.png
+        }
+
+        else if (game_state === 'playing' || game_state === 'keys_collect') {
+            allEnemies.forEach(function(enemy) {
+                enemy.update(dt); // updates the enemies position
+            });
+
+            allKeys.forEach(function(key) {
+                key.update(); // checks to make sure no two keys are rendered on top of each other
+            });
+
+            player.update(); // updates player's position
+        }
     }
 
     /* This function initially draws the "game level", it will then call
@@ -108,6 +138,7 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
+                //'images/white-block.png',
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
@@ -132,7 +163,9 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83); 
+               
             }
         }
 
@@ -148,11 +181,46 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
 
-        player.render();
+        if (game_state === 'char_select') {
+            selectChar.render() 
+        }
+
+        if (game_state === 'end') {
+            gameOver.render();
+            stage.render();
+        }
+
+        if (game_state === 'playing') { // we WILL NOT render the star object here
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+
+            allKeys.forEach(function(key) {
+                key.render();
+            });
+
+            player.render();
+
+            heart.render();
+
+            stage.render();
+        }
+
+
+        if (game_state === 'keys_collect') { // we WILL NOT render the key object here s
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+
+            star.render(); 
+
+            player.render();
+
+            heart.render();
+
+            stage.render();
+        }
     }
 
     /* This function does nothing but it could have been a good place to
@@ -168,11 +236,20 @@ var Engine = (function(global) {
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
+        'images/white-block.png',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/heart1.png',
+        'images/Key.png',
+        'images/Selector.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 
