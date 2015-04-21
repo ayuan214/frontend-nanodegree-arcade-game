@@ -1,6 +1,69 @@
 // Enemies our player must avoid
 var game_state = 'char_select';
+var allEnemies;
+var allKeys;
+var heart; 
+var player; 
 
+var Key = function() {
+    this.x = this.x_position();
+    this.y = this.y_position();
+    this.sprite = 'images/Key.png';
+    return this;
+}
+
+Key.prototype.x_position = function() {
+    var del_x = Math.floor(Math.random()*10);
+    var init_x = 0;
+    if (del_x <=1) {
+        init_x;
+    }
+    else if (del_x >= 2 && del_x <=3) {
+        init_x += 100;   
+    }
+    else if (del_x >= 4 && del_x <=5) {
+        init_x += 200;   
+    }
+    else if (del_x >= 6 && del_x <=7) {
+        init_x += 300;   
+    }
+    else if (del_x >= 8 && del_x <=9) {
+        init_x += 400;   
+    }
+    return init_x; 
+       
+}
+
+Key.prototype.y_position = function() {
+    var del_y = Math.floor(Math.random()*10);
+    
+    var init_y = 60;  
+    //var y_loc = 0; 
+
+    if (del_y <= 3) {
+        init_y; 
+    }
+    else if (del_y > 3 && del_y <7){
+        init_y += init_y+25;
+    }
+
+    else if (del_y >= 7) {
+         init_y += (init_y + 105); 
+    }
+
+    return  init_y;   
+}
+
+Key.prototype.update = function() {
+    if (allKeys[0].x === allKeys[1].x && allKeys[0].y === allKeys[1].y) {
+        allKeys[0].y = 60;
+        allKeys[1].y = 60+25; 
+    }
+}
+
+Key.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
 
 var Enemy = function() {
     // Variables applied to each of our instances go here,
@@ -19,18 +82,18 @@ var Enemy = function() {
 Enemy.prototype.y_position = function() {
     var del_y = Math.floor(Math.random()*10);
     
-    var init_y = 70;  
+    var init_y = 60;  
     //var y_loc = 0; 
 
     if (del_y <= 3) {
         init_y; 
     }
-    else if (del_y > 3 && del_y <9){
-        init_y += init_y+15;
+    else if (del_y > 3 && del_y <7){
+        init_y += init_y+25;
     }
 
-    else if (del_y >= 9) {
-         init_y += (init_y + 50*2); 
+    else if (del_y >= 7) {
+         init_y += (init_y + 105); 
     }
 
     return  init_y;   
@@ -54,10 +117,7 @@ Enemy.prototype.update = function(dt) {
         this.x = -50;
         this.speed = this.velocity();
         this.y = this.y_position(); 
-    }
-
-    // checks for enemy collision 
-   
+    }   
 }    
 
 
@@ -70,10 +130,10 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 
-var Player = function(x,y) {
+var Player = function(char_img,x,y) {
     this.x = x; 
     this.y = y; 
-    this.sprite = 'images/char-boy.png';
+    this.sprite = char_img;
     this.x_mov = 0;
     this.y_mov = 0; 
     this.col_num = 0;
@@ -91,11 +151,11 @@ Player.prototype.update = function() {
     else if(this.x < 1){
         this.x = 1;
     }
-    else if(this.y > 415){
-        this.y = 415;
+    else if(this.y > 400){
+        this.y = 400;
     }
-    else if(this.y < 0){
-        player.y = 1;
+    else if(this.y < -40){
+        player.y = -40;
     }
 
     this.x_mov = 0;
@@ -138,7 +198,7 @@ var Heart = function(lives) {
 Heart.prototype.render = function() {
     ctx.fillStyle = "black";
     ctx.font = "bold 25px sans-serif";
-    ctx.fillText('Lives:', 300, this.y+30);
+    ctx.fillText('Lives:', 340, this.y+30);
     for (i=0; i<this.lives; i++)
     ctx.drawImage(Resources.get(this.sprite), (this.x-(i+1)*25), this.y);
     //ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -154,7 +214,9 @@ GameOver.prototype.render = function() {
         ctx.textAlign = "center";
         ctx.fillStyle = "white";
         ctx.font = "bold 48px sans-serif";
-        ctx.fillText('GAME OVER', ctx.canvas.width/2, ctx.canvas.height/5);
+        ctx.fillText('GAME OVER', ctx.canvas.width/2, ctx.canvas.height/6);
+        ctx.font = "15px sans-serif";
+        ctx.fillText('Press the up arrow to try again', ctx.canvas.width/2, ctx.canvas.height/4.9);
     }
 }
 
@@ -183,7 +245,7 @@ var selectChar = function() {
 
     this.sprite = 'images/Selector.png';
     this.x = 0;
-    this.y = 225;
+    this.y = 210;
     this.x_mov = 0;
     this.y_mov = 0; 
 
@@ -195,7 +257,9 @@ selectChar.prototype.render = function() {
     ctx.textAlign = "center";
     ctx.fillStyle = "white";
     ctx.font = "bold 48px sans-serif";
-    ctx.fillText('Select a Character', ctx.canvas.width/2, ctx.canvas.height/5);
+    ctx.fillText('Select a Character', ctx.canvas.width/2, ctx.canvas.height/6);
+    ctx.font = "15px sans-serif";
+    ctx.fillText('Press the up arrow once you have selected a character', ctx.canvas.width/2, ctx.canvas.height/4.9);
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     for (i = 0; i < this.char_arr.length; i++ ) {
         ctx.drawImage(Resources.get(this.char_arr[i]), this.char_arr_x[i], this.char_arr_y[i]);
@@ -217,7 +281,14 @@ selectChar.prototype.render = function() {
 
  selectChar.prototype.handleInput = function(loc) {
     if(loc === "up"){
-        game_state = "playing";
+        for (i=0; i<this.char_arr.length; i++) {
+            if(this.x === this.char_arr_x[i]) {
+                this.index_val = this.char_arr_x.indexOf(this.char_arr_x[i]);
+                this.char_sprite = this.char_arr[this.index_val];
+                //var player = new Player(this.selectChar_fin, 200, 415);
+            }
+        }
+        game_state = "game_start";
     }
 
     else if(loc === "right"){
@@ -240,6 +311,15 @@ var Collision_Check = function() {
             heart.lives--; 
         }
     }
+
+    for (key in allKeys) {
+        if (Math.abs(allKeys[key].x-player.x) < 50 && Math.abs(allKeys[key].y-player.y) < 15) {
+           var key_index =  allKeys.indexOf(allKeys[key]);
+           if (key_index > -1) {
+                allKeys.splice(key_index,1);
+           }
+        }
+    }
 }
 
 // Now instantiate your objects.
@@ -248,6 +328,7 @@ var Collision_Check = function() {
 
 var gameStart = function() {
     game_state = 'char_select';
+    return game_state; 
 }
 
 var lives_check = function() {
@@ -258,19 +339,28 @@ var lives_check = function() {
     //return game_state; 
 }
 
+var gamePlay = function(bug_count, lives, player_x, player_y) {
+    allEnemies = [];
+    allKeys = [];
 
-    var allEnemies = [];
-    for (var bug = 0; bug < 3; bug++) {
+    for (var i = 0; i < 2; i++) { // orig value bug = 3
+        allKeys.push(new Key());
+    }
+
+    for (var bug = 0; bug < bug_count; bug++) { // orig value bug = 3
         allEnemies.push(new Enemy());
     }
 
+    player = new Player(selectChar.char_sprite, player_x, player_y); // orig value Player(200,415)
+
+    heart = new Heart(lives); // orig value Heart(5)
+    game_state = 'playing'; 
+}
+
+    var selectChar = new selectChar();
+    //var gamePlay = new gamePlay(); 
     var gameOver = new GameOver();
-
-    var player = new Player(200, 415);
-
-    var heart = new Heart(5);
-
-    var selectChar = new selectChar(); 
+     
 
 
 
@@ -284,7 +374,14 @@ document.addEventListener('keyup', function(e) {
         40: 'down'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
-    selectChar.handleInput(allowedKeys[e.keyCode]);
+    if (game_state === 'playing') {
+        player.handleInput(allowedKeys[e.keyCode]);  
+    }
+    else if (game_state === 'char_select') {
+        selectChar.handleInput(allowedKeys[e.keyCode]);  
+    }
 
+    else if (game_state === 'end') {
+        gameOver.handleInput(allowedKeys[e.keyCode]);
+    }
 });

@@ -45,6 +45,8 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         update(dt);
         render();
 
@@ -81,9 +83,18 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        if (game_state === 'game_start') {
+            gamePlay(5, 5, 200, 400);
+        }
+
+        if (game_state === 'playing') {
+            Collision_Check();
+            lives_check();  
+        }
+
+
         updateEntities(dt);
-        Collision_Check();
-        lives_check(); 
+         
     }
 
     /* This is called by the update function  and loops through all of the
@@ -94,11 +105,26 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
-        });
-        player.update();
-        selectChar.update();
+
+        if (game_state === 'char_select') {
+            selectChar.update(); 
+        }
+
+        else if (game_state === 'playing') {
+            allEnemies.forEach(function(enemy) {
+                enemy.update(dt);
+            });
+
+            allKeys.forEach(function(key) {
+                key.update();
+            });
+
+            player.update();  
+        }
+
+
+     
+       
 
         /*
         allHeart.forEach(function(heart) {
@@ -118,7 +144,7 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/white-block.png',
+                //'images/white-block.png',
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
@@ -126,7 +152,7 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 7,
+            numRows = 6,
             numCols = 5,
             row, col;
 
@@ -144,12 +170,7 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
 
-                if (row == 0) {
-                    ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 5); 
-                }
-
-                else 
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83 -70); 
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83); 
                
             }
         }
@@ -178,6 +199,10 @@ var Engine = (function(global) {
         if (game_state === 'playing') {
             allEnemies.forEach(function(enemy) {
                 enemy.render();
+            });
+
+            allKeys.forEach(function(key) {
+                key.render();
             });
 
             player.render();
@@ -216,6 +241,7 @@ var Engine = (function(global) {
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
         'images/heart1.png',
+        'images/Key.png',
         'images/Selector.png'
     ]);
     Resources.onReady(init);
