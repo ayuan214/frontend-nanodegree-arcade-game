@@ -1,4 +1,6 @@
 frontend-nanodegree-arcade-game
+
+Created a game using object oriented Javascript and manipulating a HTML canvas. 
 ===============================
 
 Step 1: Use the left/right arrow keys to move the yellow selector underneath the character that you want to play as.
